@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blue Travels · Administración</title>
+
+    <link rel="stylesheet" href="css/main.css">
+
+    <script defer src="js/init.js"></script>
+    <script defer src="js/main.js"></script>
+    <script type="module" defer src="js/admin.js"></script>
+</head>
+<body>
+    <header class="navBar">
+        <div class="title">Blue Travels</div>
+        <nav>
+            <button class="navBtn" id="navTable" onclick="window.location.href='main.html'">Tablero</button>
+            <button class="navBtn" id="navAdmin" onclick="window.location.href='admin.html'">Administración</button>
+            <button class="navBtn" id="navUsers" onclick="window.location.href='users.html'">Usuarios y roles</button>
+
+            <div class="separator"></div>
+            <button class="navBtn noBtn" id="usernameText">Nombre</button>
+            <div class="rolBox">GESTOR</div>
+            <div class="separator"></div>
+            <button class="navBtn exit" id="exitBtn">Cerrar sesión</button>
+        </nav>
+    </header>
+
+    <main>
+        <h2>Panel administración (GESTOR)</h2>
+        <div class="navOptions">
+            <button class="navBtn navSecondary" onclick="showAdminSection('puntos')">📍 Puntos (Puertas/Vías)</button>
+            <button class="navBtn navSecondary" onclick="showAdminSection('operadores')">🏢 Operadores</button>
+            <button class="navBtn navSecondary" onclick="showAdminSection('operaciones')">✈️ Operaciones (Vuelos/Trenes)</button>
+        </div>
+        <hr>
+        <div id="adminContent">
+            <h3 class="title" id="adminTitle" style="margin-bottom: 16px;"></h3>
+
+            <div class="panel subSticky" style="margin-bottom: 16px;">
+                <h4 id="titleAdminEdit"></h4>
+                <hr>
+                <form id="adminForm">
+                    <div id="editForm"></div>
+                    <hr style="width: 100%;">
+                    <div>
+                        <button id="btnSubmit" type="submit">Añadir</button>
+                        <button id="btnCancel" type="button" style="display: none;">Cancelar edición</button>
+                    </div>
+                </form>
+            </div>
+
+            <table class="shadowPanel" id="adminTable"></table>
+        </div>
+    </main>
+</body>
+</html>

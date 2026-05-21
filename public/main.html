@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blue Travels · Tablero</title>
+    <link rel="stylesheet" href="css/main.css">
+    <script defer src="js/init.js"></script>
+    <script defer src="js/board.js"></script>
+    <script defer src="js/main.js"></script>
+</head>
+<body>
+    <header class="navBar">
+        <div class="title">Blue Travels</div>
+
+        <nav>
+            <button class="navBtn" id="navTable" onclick="window.location.href='main.html'">Tablero</button>
+            <button class="navBtn" id="navAdmin" onclick="window.location.href='admin.html'">Administración</button>
+            <button class="navBtn" id="navUsers" onclick="window.location.href='users.html'">Usuarios y roles</button>
+
+            <div class="separator"></div>
+            <button class="navBtn noBtn" id="usernameText">Nombre</button>
+            <div class="rolBox">GESTOR</div>
+            <div class="separator"></div>
+            <button class="navBtn exit" id="exitBtn">Cerrar sesión</button>
+        </nav>
+    </header>
+
+    <main>
+        <section class="subNavBar subSticky">
+            <input class="textInput" type="text" id="searchCode" placeholder="Buscar código" class="textInput">
+
+            <div class="separator"></div>
+
+            <div class="selectBox">
+                <select id="filterStatus">
+                    <option value="TODOS">Estados</option>
+                    <option value="PROGRAMADO">PROGRAMADO</option>
+                    <option value="EMBARCANDO">EMBARCANDO</option>
+                    <option value="RETRASADO">RETRASADO</option>
+                    <option value="CANCELADO">CANCELADO</option>
+                    <option value="EN RUTA">EN RUTA</option>
+                    <option value="LLEGADO">LLEGADO</option>
+                </select>
+            </div>
+
+            <div class="selectBox">
+                <select id="sortData">
+                    <option value="horaEstimada">Ordenar por hora</option>
+                    <option value="codigo">Ordenar por código</option>
+                    <option value="origen">Ordenar por origen</option>
+                    <option value="destino">Ordenar por destino</option>
+                </select>
+            </div>
+        </section>
+
+        <section class="board">
+            <div class="panel">
+                <h2>🛫 Salidas</h2>
+                <div class="viewTable" id="departuresBoard"></div>
+            </div>
+
+            <div class="panel">
+                <h2>🛬 Llegadas</h2>
+                <div class="viewTable" id="arrivalsBoard"></div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

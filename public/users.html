@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blue Travels · Gestión de Usuarios</title>
+
+    <link rel="stylesheet" href="css/main.css">
+    <script defer src="js/main.js"></script> 
+    <script defer src="js/users.js"></script>
+</head>
+<body>
+    <header class="navBar">
+        <div class="title">Blue Travels</div>
+        <nav>
+            <button class="navBtn" id="navTable" onclick="window.location.href='main.html'">Tablero</button>
+            <button class="navBtn" id="navAdmin" onclick="window.location.href='admin.html'">Administración</button>
+            <button class="navBtn" id="navUsers" onclick="window.location.href='users.html'">Usuarios y roles</button>
+
+            <div class="separator"></div>
+            <button class="navBtn noBtn" id="usernameText">Nombre</button>
+            <div class="rolBox">GESTOR</div>
+            <div class="separator"></div>
+            <button class="navBtn exit" id="exitBtn">Cerrar sesión</button>
+        </nav>
+    </header>
+
+    <main>
+        <h2>Gestión de Usuarios y roles</h2>
+        <div id="usersContainer"></div>
+    </main>
+</body>
+</html>

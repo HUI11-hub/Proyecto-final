@@ -1,0 +1,462 @@
+@font-face {
+    font-family: 'Sora';
+    src: url('./../resources/fonts/Sora-VariableFont_wght.ttf');
+}
+
+* {
+    box-sizing: border-box;
+}
+
+*::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+
+*::-webkit-scrollbar-track {
+    background-color: #ffffff;
+    border-radius: 0px;
+}
+
+*::-webkit-scrollbar-track:hover {
+    background-color: #ffffff;
+}
+
+*::-webkit-scrollbar-track:active {
+    background-color: #ffffff;
+}
+
+*::-webkit-scrollbar-thumb {
+    background-color: hsl(210, 100%, 50%);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background-color: hsl(210, 100%, 60%);
+}
+
+*::-webkit-scrollbar-thumb:active {
+    background-color: hsl(210, 100%, 40%);
+}
+
+*::-webkit-scrollbar-button {
+    display: none;
+}
+
+body {
+    margin: 0;
+    padding: 12px;
+    background-color: #e6e6e6;
+    font-family: Sora;
+}
+
+input {
+    font-family: Sora;
+    box-sizing: border-box;
+}
+
+.navBar {
+    position: sticky;
+    top: 12px;
+    min-height: 48px;
+    height: auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    padding-inline: 12px 4px;
+    background-color: #fafafa66;
+    backdrop-filter: blur(6px) brightness(1.2) contrast(1.2);
+    border: 4px solid #111111;
+    z-index: 100;
+}
+
+.title {
+    font-size: 24px;
+    font-weight: bold;
+    text-decoration-line: underline;
+    text-decoration-thickness: 4px;
+    text-decoration-color: hsl(210, 100%, 50%);
+    text-decoration-style: solid;
+}
+
+h2 {
+    font-size: 20px;
+    font-weight: bold;
+    margin: 0px 0px 12px 0px;
+}
+
+h4 {
+    font-size: 16px;
+    font-weight: bold;
+    margin: 0px 0px 12px 0px;
+}
+
+nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.separator {
+    width: 4px;
+    min-height: 32px;
+    height: calc(100% - 8px);
+    background-color: hsl(210, 100%, 50%);
+}
+
+main {
+    width: 100%;
+}
+
+button {
+    appearance: none;
+    font-family: Sora;
+    font-size: 16px;
+}
+
+button:hover {
+    cursor: pointer;
+}
+
+.navBtn {
+    background: transparent;
+    border: none;
+    height: 32px;
+    padding-inline: 12px;
+    transition: 0.12s;
+    will-change: transform;
+}
+
+.navBtn:hover {
+    background: hsla(210, 100%, 50%, 0.2);
+}
+
+.navBtn:active {
+    background: hsla(210, 100%, 50%, 0.1);
+    scale: 0.97;
+}
+
+.navSecondary {
+    height: 44px;
+    padding-inline: 18px;
+    background: white;
+}
+
+.navSecondary:hover {
+    background: hsla(210, 100%, 98%, 1);
+    box-shadow: 0px 0px 0px 2px hsla(210, 100%, 50%, 0.2);
+}
+
+.navSecondary:active {
+    background: hsla(210, 100%, 96%, 1);
+}
+
+.exit:hover {
+    color: hsla(340, 100%, 50%);
+    background: hsla(340, 100%, 50%, 0.2);
+}
+
+.exit:active {
+    background: hsla(340, 100%, 50%, 0.1);
+}
+
+.noBtn {
+    pointer-events: none;
+}
+
+.rolBox {
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    background-color: hsl(210, 100%, 50%);
+    padding-inline: 12px;
+}
+
+.subNavBar {
+    height: 60px;
+    padding-inline: 4px;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background-color: #fafafa;
+    border: 4px solid #111111;
+    box-shadow: 4px 4px 0px #111;
+}
+
+.navOptions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding-bottom: 12px;
+}
+
+main {
+    padding: 18px;
+}
+
+.textInput {
+    appearance: none;
+    width: 100%;
+    height: 44px;
+    border: 2px solid #999999;
+    padding: 16px 12px;
+    transition: 0.2s;
+}
+
+.colorInput {
+    appearance: none;
+    width: 100%;
+    height: 44px;
+    width: 120px;
+    border: 2px solid #999999;
+    transition: 0.2s;
+}
+
+.textInput:hover, .colorInput:hover {
+    outline: none;
+    border: 2px solid black;
+}
+
+.textInput:focus, .colorInput:focus {
+    outline: none;
+    border: 2px solid hsl(210, 100%, 50%);
+}
+
+.textInput:invalid {
+    border: 2px solid red;
+}
+
+.selectBox {
+    position: relative;
+}
+
+.selectBox::after {
+    content: '▼';
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+.btnEdit, .btnDelete {
+    border: none;
+    color: white;
+    padding: 8px 12px;
+    font-weight: bold;
+    font-size: 16px;
+    transition: 0.2s;
+    will-change: transform;
+}
+
+#btnSubmit, .btnEdit {
+    background-color: hsl(210, 100%, 50%);
+}
+
+#btnCancel {
+    background-color: hsl(210, 30%, 50%);
+}
+
+.btnDelete {
+    background-color: hsl(340, 100%, 50%);
+}
+
+#btnSubmit, #btnCancel {
+    border: none;
+    height: 44px;
+    color: white;
+    padding: 0 24px;
+    font-weight: bold;
+    font-size: 16px;
+    transition: 0.2s;
+    will-change: transform;
+}
+
+.btnChange {
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    transition: 0.2s;
+    will-change: transform;
+}
+
+#btnSubmit:hover, #btnCancel:hover, .btnChange:hover, .btnEdit:hover {
+    filter: brightness(125%);
+    cursor: pointer;
+}
+
+.btnDelete:hover {
+    background-color: hsl(340, 100%, 30%);
+    cursor: pointer;
+}
+
+#btnSubmit:active, #btnCancel:active, .btnChange:active, .btnEdit:active, .btnDelete:active {
+    scale: 0.96;
+}
+
+select {
+    appearance: none;
+    font-family: Sora;
+    height: 44px;
+    border: 2px solid #999999;
+    padding: 0px 44px 0px 12px;
+    transition: 0.2s;
+}
+
+select:hover {
+    outline: none;
+    border: 2px solid black;
+}
+
+select:focus {
+    outline: none;
+    border: 2px solid hsl(210, 100%, 50%);
+}
+
+.board {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.panel {
+    flex: 1;
+    min-width: 400px;
+    background-color: #fafafa;
+    padding: 12px;
+    border: 4px solid #111;
+    box-shadow: 4px 4px 0px #111;
+}
+
+.viewTable {
+    overflow-x: auto;
+}
+
+.noOps {
+    padding: 16px;
+    color: #666;
+    text-align: center;
+}
+
+.subSticky {
+    position: sticky;
+    top: 78px;
+    z-index: 10;
+}
+
+.forceSticky {
+    position: fixed;
+    top: 12px;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    text-align: left;
+    border: 4px solid rgba(0, 0, 0, 1);
+    background-color: #fafafa;
+}
+
+tr {
+    background-color: #fafafa;
+    transition: 0.4s, 0.2s scale ease-in-out;
+    will-change: transform;
+}
+
+.highlightTable {
+    scale: 1.016;
+    background-color: hsla(210, 100%, 90%, 1);
+    animation: highlight 1.6s ease-in-out forwards infinite;
+    isolation: isolate;
+}
+
+@keyframes highlight {
+    0% {
+        box-shadow: inset 0px 0px 0px 0px hsla(210, 100%, 50%, 0.4);
+    }
+    50% {
+        box-shadow: inset 0px 0px 0px 8px hsla(210, 100%, 50%, 1);
+    }
+    100% {
+        box-shadow: inset 0px 0px 0px 0px hsla(210, 100%, 50%, 0.4);
+    }
+}
+
+th {
+    background-color: #e6e6e6;
+}
+
+th, td {
+    padding: 12px;
+    border: 2px solid rgba(0, 0, 0, 0.2);
+}
+
+.estadoTable {
+    padding: 4px 8px;
+    border: 2px solid rgba(0, 0, 0, 0.2);
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+#adminForm {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+#editForm {
+    display: flex;
+    gap: 12px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+
+.shadowPanel {
+    box-shadow: 4px 4px 0px #111;
+}
+
+#adminTable th:last-child, #adminTable td:last-child {
+    width: 1px;
+    white-space: nowrap;
+    text-align: right;
+}
+
+#adminTable td:last-child *:not(:last-child) {
+    margin-right: 8px;
+}
+
+.inputBox {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+@media screen and (max-width: 1200px) {
+    .board {
+        flex-flow: column;
+    }
+
+    .hiddenMobile {
+        display: none;
+    }
+}
+
+@media screen and (max-width: 1000px) {
+    .navBar {
+        flex-direction: column;
+        height: auto;
+        padding: 12px 12px 4px 12px;
+        gap: 12px;
+    }
+
+    nav {
+        justify-content: center;
+    }
+
+    .subSticky {
+        position: static;
+    }
+}
