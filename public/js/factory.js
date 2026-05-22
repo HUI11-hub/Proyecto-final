@@ -1,21 +1,61 @@
-class LocalStorageFactory {
-    constructor(key) { this.key = key; }
+const API_BASE = '/api/v1';
 
-    async load() {
-        const raw = localStorage.getItem(this.key);
-        return raw ? JSON.parse(raw) : [];
+class ApiFactory {
+    constructor(endpoint) {
+        this.endpoint = `${API_BASE}/${endpoint}`;
     }
 
-    async save(list) {
-        localStorage.setItem(this.key, JSON.stringify(list));
+    async load() {
+        try {
+            const response = await fetch(this.endpoint);
+            if (!response.ok) throw new Error('Error de red al cargar');
+            return await response.json();
+        } catch (error) {
+            console.error(`Error cargando ${this.endpoint}:`, error);
+            return [];
+        }
+    }
+
+    async create(item) {
+        try {
+            await fetch(this.endpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(item)
+            });
+        } catch (error) {
+            console.error(`Error creando en ${this.endpoint}:`, error);
+        }
+    }
+
+    async update(id, item) {
+        try {
+            await fetch(`${this.endpoint}/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(item)
+            });
+        } catch (error) {
+            console.error(`Error actualizando en ${this.endpoint}:`, error);
+        }
+    }
+
+    async delete(id) {
+        try {
+            await fetch(`${this.endpoint}/${id}`, {
+                method: 'DELETE'
+            });
+        } catch (error) {
+            console.error(`Error borrando en ${this.endpoint}:`, error);
+        }
     }
 }
 
 export function createRepo(kind) {
     switch (kind) {
-        case "operations": return new LocalStorageFactory("operations");
-        case "operators": return new LocalStorageFactory("operators");
-        case "waypoints": return new LocalStorageFactory("waypoints");
-        default: throw new Error("Clase no soportado: " + kind);
+        case "operations": return new ApiFactory("operations");
+        case "operators": return new ApiFactory("operators");
+        case "waypoints": return new ApiFactory("spots");
+        default: throw new Error("Clase no soportada: " + kind);
     }
 }
