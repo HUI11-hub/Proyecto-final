@@ -28,7 +28,7 @@ const modelOperations = new Operation(createRepo("operations"));
 const controllerOperations = new Controller(modelOperations, viewOperations);
 controllerWaypoints.load();
 
-window.showAdminSection = function(seccion) {
+function showAdminSection(seccion) {
     if (seccion === 'puntos') {
         controllerWaypoints.load();
     } else if (seccion === 'operadores') {
@@ -38,4 +38,6 @@ window.showAdminSection = function(seccion) {
     }
 
     view.clearForm();
-};
+}
+
+window.showAdminSection = showAdminSection;

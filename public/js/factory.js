@@ -18,7 +18,19 @@ export class ApiFactory {
         try {
             const response = await fetch(this.endpoint, { headers: this.getHeaders() });
             if (!response.ok) return [];
-            return await response.json();
+            const data = await response.json();
+            
+            if (this.endpoint.includes('operators') && data.operadores) {
+                return data.operadores.map(item => item.operador || item);
+            }
+            if (this.endpoint.includes('spots') && data.puntos) {
+                return data.puntos.map(item => item.punto || item);
+            }
+            if (this.endpoint.includes('operations') && data.operaciones) {
+                return data.operaciones.map(item => item.operacion || item);
+            }
+            
+            return data;
         } catch (error) {
             console.error(`Error GET ${this.endpoint}:`, error);
             return [];
@@ -26,19 +38,39 @@ export class ApiFactory {
     }
 
     async create(item) {
-        await fetch(this.endpoint, {
+        const payload = { ...item };
+        delete payload.id; 
+        
+        const response = await fetch(this.endpoint, {
             method: 'POST',
             headers: this.getHeaders(),
-            body: JSON.stringify(item)
+            body: JSON.stringify(payload) 
         });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error(`ERROR DEL BACK-END (${response.status}):`, errorText);
+            alert(`El servidor rechazó los datos (Error ${response.status}).`);
+            throw new Error("POST abortado");
+        }
     }
 
     async update(id, item) {
-        await fetch(`${this.endpoint}/${id}`, {
+        const payload = { ...item };
+        delete payload.id;
+
+        const response = await fetch(`${this.endpoint}/${id}`, {
             method: 'PUT',
             headers: this.getHeaders(),
-            body: JSON.stringify(item)
+            body: JSON.stringify(payload)
         });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error(`ERROR DEL BACK-END (${response.status}):`, errorText);
+            alert(`El servidor rechazó la edición (Error ${response.status}).`);
+            throw new Error("PUT abortado");
+        }
     }
 
     async delete(id) {
@@ -53,7 +85,10 @@ export function createRepo(kind) {
     switch (kind) {
         case "operations": return new ApiFactory("operations");
         case "operators": return new ApiFactory("operators");
-        case "waypoints": return new ApiFactory("spots"); // Conectamos waypoints con /spots
-        default: throw new Error("Colección no soportada");
+        case "waypoints": 
+        case "spots": 
+        case "puntos": 
+            return new ApiFactory("spots");
+        default: throw new Error(`Colección no soportada: '${kind}'`);
     }
 }
