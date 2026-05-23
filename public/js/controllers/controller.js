@@ -4,31 +4,31 @@ export class Controller {
         this.view = view;
     }
 
-    load() {
+    async load() {
         this.view.bindFormSubmit((e) => this.handleSubmit(e));
         this.view.bindCancel((e) => this.handleCancel(e));
         this.view.bindListClick((e) => this.handleListClick(e));
 
-        const items = this.model.getItems();
+        const items = await this.model.load();
         this.view.render(items);
     }
 
-    handleSubmit(e) {
+    async handleSubmit(e) {
         e.preventDefault();
         const data = this.view.getFormData();
 
         if (!this.model.validateItem(data)) return;
 
         if (data.id) {
-            this.model.updateItem(data);
+            await this.model.updateItem(data);
         } else if (data.ulid) {
-            this.model.updateItem(data);
+            await this.model.updateItem(data);
         } else {
-            this.model.addItem(data);
+            await this.model.addItem(data);
         }
 
-        this.model.save();
-        this.view.renderTable(this.model.getItems());
+        const items = await this.model.load();
+        this.view.renderTable(items);
         this.view.clearForm();
     }
 
@@ -36,23 +36,17 @@ export class Controller {
         this.view.clearForm();
     }
 
-    handleListClick(e) {
+    async handleListClick(e) {
         e.preventDefault();
         const btn = e.target.closest("button[data-action][data-id]");
         if (!btn) return;
 
-        const trHighlightAux = document.querySelector("tr.highlightTable");
-        trHighlightAux?.classList.remove("highlightTable");
-
-        const trHighlight = e.target.closest("tr");
-        trHighlight?.classList.add("highlightTable");
-
         const { action, id } = btn.dataset;
 
         if (action === "delete" || action === "deleteUlid") {
-            this.model.deleteItem(id);
-            this.model.save();
-            this.view.renderTable(this.model.getItems());
+            await this.model.deleteItem(id);
+            const items = await this.model.load();
+            this.view.renderTable(items);
             this.view.clearForm();
             return;
         }
