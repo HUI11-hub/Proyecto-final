@@ -4,12 +4,12 @@ export class Controller {
         this.view = view;
     }
 
-    async load() {
+    load() {
         this.view.bindFormSubmit((e) => this.handleSubmit(e));
         this.view.bindCancel((e) => this.handleCancel(e));
         this.view.bindListClick((e) => this.handleListClick(e));
 
-        const items = await this.model.load();
+        const items = this.model.getItems();
         this.view.render(items);
     }
 
@@ -17,17 +17,19 @@ export class Controller {
         e.preventDefault();
         const data = this.view.getFormData();
 
+        if (!this.model.validateItem(data)) return;
+
         if (data.id) {
-            this.model.updateItem(data.id, data)
+            this.model.updateItem(data);
         } else if (data.ulid) {
-            this.model.updateItem(data.ulid, data)
+            this.model.updateItem(data);
         } else {
             this.model.addItem(data);
         }
 
+        this.model.save();
         this.view.renderTable(this.model.getItems());
         this.view.clearForm();
-        this.model.save();
     }
 
     handleCancel() {
@@ -43,38 +45,28 @@ export class Controller {
         trHighlightAux?.classList.remove("highlightTable");
 
         const trHighlight = e.target.closest("tr");
-        trHighlight.classList.add("highlightTable");
+        trHighlight?.classList.add("highlightTable");
 
         const { action, id } = btn.dataset;
 
-        if (action === "delete") {
-            this.model.removeItem(Number(id));
-            this.view.renderTable(this.model.getItems());
+        if (action === "delete" || action === "deleteUlid") {
+            this.model.deleteItem(id);
             this.model.save();
+            this.view.renderTable(this.model.getItems());
             this.view.clearForm();
             return;
         }
 
-        if (action === "deleteUlid") {
-            this.model.removeItemULID(id); //id es ulid
-            this.view.renderTable(this.model.getItems());
-            this.model.save();
-            this.view.clearForm();
-            return;
-        }
-
-        if (action === "edit") {
-            const item = this.model.findById(Number(id));
+        if (action === "edit" || action === "editUlid") {
+            let item = null;
+            if (action === "edit") {
+                item = this.model.findById(Number(id));
+            } else {
+                item = this.model.findByUlid(String(id).trim());
+            }
+            
             if (!item) return;
             this.view.fillForm(item);
-            this.model.save();
-        }
-
-        if (action === "editUlid") {
-            const item = this.model.findByUlid(String(id).trim()); //id es ulid
-            if (!item) return;
-            this.view.fillForm(item);
-            this.model.save();
         }
     }
 }

@@ -1,22 +1,36 @@
-let inputEmail = document.getElementById("inputEmail");
-let inputPassword = document.getElementById("inputPassword");
-let btnLogin = document.getElementById("btnLogin");
+const btnLogin = document.getElementById("btnLogin") || document.querySelector("button");
+const inputEmail = document.getElementById("inputEmail") || document.querySelector("input[type='email']");
+const inputPassword = document.getElementById("inputPassword") || document.querySelector("input[type='password']");
 
-btnLogin.onclick = () => {
-    console.log("Hola")
-    let users = JSON.parse(localStorage.getItem("users"))
-    for (let i = 0; i < users.length; i++) {
-        if (users[i]["name"] === inputEmail.value) {
-            console.log("Usuario encontrado");
-            if (users[i]["password"] === inputPassword.value) {
-                sessionStorage.setItem("user", JSON.stringify(users[i]));
-                document.location = "main.html"
+if (btnLogin) {
+    btnLogin.addEventListener("click", async (e) => {
+        e.preventDefault(); 
+        
+        try {
+            const response = await fetch('/access_token', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    username: inputEmail.value, 
+                    password: inputPassword.value
+                })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                const token = data.access_token || data.token; 
+                sessionStorage.setItem("user", JSON.stringify({
+                    name: inputEmail.value,
+                    rol: "manager", 
+                    token: token
+                }));
+
+                document.location = "main.html";
             } else {
-                console.log("Contraseña incorrecta");
-            };
-            break
-        };
-        console.log("Next...");
-    };
-    console.log("Terminado");
-};
+                alert("Acceso denegado: El servidor no reconoce esas credenciales.");
+            }
+        } catch (error) {
+            console.error("Error de conexión:", error);
+        }
+    });
+}
