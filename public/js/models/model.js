@@ -1,56 +1,46 @@
+import { createRepo } from '../factory.js';
+
 export class Model {
-    constructor(factory) {
-        this.factory = factory;
+    constructor(kind) {
+        this.factory = createRepo(kind);
         this.items = [];
-        this.nextId = 1;
+    }
+
+    async load() {
+        this.items = await this.factory.load();
+        return this.items;
     }
 
     getItems() {
-        return this.items.map(x => ({ ...x }));
+        return this.items;
+    }
+
+    async addItem(item) {
+        await this.factory.create(item);
+    }
+
+    async updateItem(item) {
+        const id = item.id || item.ulid;
+        await this.factory.update(id, item);
+    }
+
+    async deleteItem(id) {
+        await this.factory.delete(id);
     }
 
     findById(id) {
-        return this.items.find(x => x.id === id) || null;
+        return this.items.find(item => item.id === id);
     }
 
     findByUlid(ulid) {
-        return this.items.find(x => x.ulid === ulid) || null;
+        return this.items.find(item => String(item.ulid).trim() === String(ulid).trim());
     }
 
-    setItems(items) {
-        if (!Array.isArray(items)) throw new Error("El modelo espera un array.");
-    }
-
-    async save() {
-        await this.factory.save(this.items);
-    }
-
-    _calcId() {
-        let max = 0;
-        for (const it of this.items) {
-            const n = Number(it.id);
-            if (Number.isFinite(n)) max = Math.max(max, n);
+    validateItem(item) {
+        if (item.codigo && item.codigo.trim() === "") {
+            alert("El código no puede estar vacío");
+            return false;
         }
-        this.nextId = max + 1;
-    }
-
-    _calcIdULID() {
-        let max = "00000000000000000000000000";
-        for (const it of this.items) {
-            if (it.ulid > max) max = it.ulid;
-        }
-        this.nextId = max;
-    }
-
-    removeItem(id) {
-        const before = this.items.length;
-        this.items = this.items.filter(x => x.id !== id);
-        return this.items.length !== before;
-    }
-
-    removeItemULID(ulid) {
-        const before = this.items.length;
-        this.items = this.items.filter(x => x.ulid !== ulid);
-        return this.items.length !== before;
+        return true;
     }
 }
