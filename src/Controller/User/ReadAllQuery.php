@@ -55,7 +55,7 @@ class ReadAllQuery
         // Caching with ETag
         $etag = md5((string) json_encode($users));
         if (in_array($etag, $request->getHeader('If-None-Match'), true)) {
-                return $response->withStatus(StatusCode::STATUS_NOT_MODIFIED); // 304
+            return $response->withStatus(StatusCode::STATUS_NOT_MODIFIED); // 304
         }
 
         return $response

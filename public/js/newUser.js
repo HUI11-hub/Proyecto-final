@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     body: JSON.stringify({
                         email: inputEmail.value,
                         password: inputPassword.value,
-                        role: "manager"
+                        role: "writer"
                     })
                 });
 

@@ -47,8 +47,8 @@ class SpotCommandController
 
         $req_data = (array) $request->getParsedBody();
 
-        if ((TipoPunto::PUERTA != $req_data['tipo'] && TipoPunto::VIA != $req_data['tipo']) ?? ''
-            || !$this->verifyStringInput($req_data['codigo'] ?? '', 10)) {  // 422 - Faltan datos o exceden los límites
+        $tipo = TipoPunto::tryFrom(strtoupper((string) ($req_data['tipo'] ?? '')));
+        if ($tipo === null || !$this->verifyStringInput($req_data['codigo'] ?? '', 10)) {  // 422 - Faltan datos o exceden los límites
             return Error::createResponse($response, StatusCode::STATUS_UNPROCESSABLE_ENTITY);
         }
 
@@ -61,7 +61,7 @@ class SpotCommandController
         }
 
         // 201
-        $element = new Punto($req_data['tipo'], $req_data['codigo']);
+        $element = new Punto($tipo->value, $req_data['codigo']);
         $this->entityManager->persist($element);
         $this->entityManager->flush();
 
@@ -112,18 +112,13 @@ class SpotCommandController
         }
 
         // Update element type
-        if (isset($req_data['tipo']) && (TipoPunto::PUERTA != $req_data['tipo'] && TipoPunto::VIA != $req_data['tipo']) ?? '') { // 400
-            $elementId = $this->findByAttribute(
-                $this->entityManager->getRepository(Punto::class),
-                'tipo',
-                $req_data['tipo']
-            );
-            if (($elementId !== 0) && (intval($args['spotId']) !== $elementId)) {
-                // 400 BAD_REQUEST: element type already exists
+        if (isset($req_data['tipo'])) {
+            $tipo = TipoPunto::tryFrom(strtoupper((string) $req_data['tipo']));
+            if ($tipo === null) {
                 $this->entityManager->rollback();
                 return Error::createResponse($response, StatusCode::STATUS_BAD_REQUEST);
             }
-            $element->setTipo($req_data['tipo']);
+            $element->setTipo($tipo->value);
         }
 
         // Update element code
