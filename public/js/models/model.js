@@ -17,7 +17,6 @@ export class Model {
 
     async addItem(item) {
         const created = await this.factory.create(item);
-        // Añadir el elemento recién creado (con su id real) a la lista local
         if (created && created.id) {
             this.items.push(created);
         }

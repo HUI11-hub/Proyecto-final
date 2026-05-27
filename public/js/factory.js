@@ -66,7 +66,6 @@ export class ApiFactory {
         delete payload.id;
 
         if (this.endpoint.includes('operations')) {
-            console.log("📦 PAQUETE ORIGINAL DEL FORMULARIO:", payload);
             if (payload.estado)  payload.estado  = String(payload.estado).toLowerCase();
             if (payload.tipo)    payload.tipo     = String(payload.tipo).toLowerCase();
             if (payload.sentido) payload.sentido  = String(payload.sentido).toLowerCase();
@@ -74,7 +73,6 @@ export class ApiFactory {
             if (payload['Hora Est.'])  { payload.horaEstimada   = payload['Hora Est.'];  delete payload['Hora Est.']; }
             if (payload.Operador)      { payload.operadorId = Number(payload.Operador);  delete payload.Operador; }
             if (payload['Puerta/Vía']) { payload.puntoId = Number(payload['Puerta/Vía']); delete payload['Puerta/Vía']; }
-            console.log("🚀 PAQUETE TRADUCIDO LISTO PARA ENVIAR:", payload);
         }
 
         const response = await fetch(this.endpoint, {
@@ -85,7 +83,6 @@ export class ApiFactory {
 
         if (!response.ok) {
             const errorText = await response.text();
-            console.error(`💥 ERROR DEL BACK-END (${response.status}):`, errorText);
             alert(`El servidor rechazó los datos (Error ${response.status}). Revisa la consola.`);
             throw new Error("POST abortado");
         }
@@ -106,7 +103,6 @@ export class ApiFactory {
 
         if (!response.ok) {
             const errorText = await response.text();
-            console.error(`ERROR DEL BACK-END (${response.status}):`, errorText);
             alert(`El servidor rechazó la edición (Error ${response.status}).`);
             throw new Error("PUT abortado");
         }
