@@ -14,21 +14,15 @@ export class ApiFactory {
         return headers;
     }
 
-    // Normaliza el objeto que devuelve el backend al formato { id, ... }
-    // El backend devuelve { "punto": { "puntoId": 1, ... } }
-    // El frontend necesita { "id": 1, ... }
     _normalize(data) {
-        // spots: { punto: { puntoId, tipo, codigo, operaciones } }
         if (data && data.punto) {
             const p = data.punto;
             return { id: p.puntoId, tipo: p.tipo, codigo: p.codigo, operaciones: p.operaciones ?? [] };
         }
-        // operators: { operador: { operadorId, nombre, siglas, color, urlIcono, operaciones } }
         if (data && data.operador) {
             const o = data.operador;
             return { id: o.operadorId, nombre: o.nombre, siglas: o.siglas, color: o.color, urlIcono: o.urlIcono, operaciones: o.operaciones ?? [] };
         }
-        // operations: { operacion: { operacionId, ... } }
         if (data && data.operacion) {
             const op = data.operacion;
             return { id: op.operacionId, ...op };
@@ -96,7 +90,6 @@ export class ApiFactory {
             throw new Error("POST abortado");
         }
         
-        // Leer y normalizar el objeto creado para obtener el id real
         const data = await response.json();
         return this._normalize(data);
     }
