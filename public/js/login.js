@@ -62,7 +62,6 @@ if (btnLogin) {
 
             const rol = rolFromScopes(payload.scopes);
 
-            // Usuario inactivo: no puede entrar
             if (rol === "inactivo") {
                 alert("Tu cuenta está inactiva. Contacta con un gestor.");
                 return;

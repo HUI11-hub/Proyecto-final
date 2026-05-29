@@ -1,6 +1,6 @@
 const currentUser = JSON.parse(sessionStorage.getItem("user"));
 if (!currentUser || currentUser.rol !== "gestor") {
-    alert("Acceso denegado. Esta zona es exclusiva para GESTORES.");
+    alert("Acceso denegado. Esta zona es exclusiva para Gestores.");
     document.location = "main.html";
 }
 
@@ -12,6 +12,7 @@ function getHeaders() {
 }
 
 const container = document.getElementById("usersContainer");
+let todosLosUsuarios = [];
 
 async function cargarUsuarios() {
     try {
@@ -23,8 +24,8 @@ async function cargarUsuarios() {
         }
 
         const data  = await response.json();
-        const users = data.users.map(item => item.user ?? item);
-        renderTabla(users);
+        todosLosUsuarios = data.users.map(item => item.user ?? item);
+        filtrarUsuarios();
 
     } catch (err) {
         console.error("Error cargando usuarios:", err);
@@ -32,7 +33,26 @@ async function cargarUsuarios() {
     }
 }
 
+window.filtrarUsuarios = function() {
+    const busqueda = (document.getElementById("searchUser")?.value ?? "").toLowerCase().trim();
+    const filtrados = todosLosUsuarios.filter(u =>
+        u.email.toLowerCase().includes(busqueda)
+    );
+    renderTabla(filtrados);
+};
+
 function renderTabla(users) {
+    if (users.length === 0) {
+        container.innerHTML = `<p style="color:#888;">No se encontraron usuarios.</p>`;
+        return;
+    }
+
+    const colorRol = {
+        GESTOR:   "hsl(210,100%,40%)",
+        PUBLICO:  "hsl(210,60%,60%)",
+        INACTIVO: "#999"
+    };
+
     let html = `
     <table class="shadowPanel" id="usersTable">
         <tr>
@@ -44,37 +64,33 @@ function renderTabla(users) {
 
     users.forEach(u => {
         const esMismo  = u.id === currentUser.id;
-        const rolLabel = u.role === "GESTOR"   ? "GESTOR"
-                       : u.role === "INACTIVO" ? "INACTIVO"
-                       : "PÚBLICO";
-        const rolColor = u.role === "GESTOR"   ? "hsl(210,100%,40%)"
-                       : u.role === "INACTIVO" ? "#999"
-                       : "hsl(210,60%,60%)";
+        const rol      = (u.role ?? "").toUpperCase();
+        const color    = colorRol[rol] ?? "#ccc";
 
         let acciones = "";
-        if (!esMismo) {
-            if (u.role !== "GESTOR") {
+        if (esMismo) {
+            acciones = `<em style="color:#888;">(tú)</em>`;
+        } else {
+            if (rol !== "GESTOR") {
                 acciones += `<button class="btnEdit" onclick="cambiarRol(${u.id}, 'gestor')">→ GESTOR</button> `;
             }
-            if (u.role !== "PUBLICO") {
-                acciones += `<button class="btnEdit" onclick="cambiarRol(${u.id}, 'publico')">PÚBLICO</button> `;
+            if (rol !== "PUBLICO") {
+                acciones += `<button class="btnEdit" onclick="cambiarRol(${u.id}, 'publico')">→ PÚBLICO</button> `;
             }
-            if (u.role !== "INACTIVO") {
-                acciones += `<button class="btnChange" onclick="cambiarRol(${u.id}, 'inactivo')" style="background:#aaa;">Desactivar</button> `;
+            if (rol !== "INACTIVO") {
+                acciones += `<button class="btnChange" onclick="cambiarRol(${u.id}, 'inactivo')" style="background:#aaa;color:#fff;">Desactivar</button> `;
             } else {
-                acciones += `<button class="btnChange" onclick="cambiarRol(${u.id}, 'publico')" style="background:hsl(210,60%,60%);">Activar</button> `;
+                acciones += `<button class="btnChange" onclick="cambiarRol(${u.id}, 'publico')" style="background:hsl(210,60%,60%);color:#fff;">Activar</button> `;
             }
             acciones += `<button class="btnDelete" onclick="eliminarUsuario(${u.id}, '${u.email}')">Eliminar</button>`;
-        } else {
-            acciones = `<em style="color:#888;">(tú)</em>`;
         }
 
         html += `
         <tr>
             <td>${u.id}</td>
             <td>${u.email}</td>
-            <td><span style="background:${rolColor};color:#fff;padding:2px 8px;border-radius:4px;">${rolLabel}</span></td>
-            <td>${acciones}</td>
+            <td><span style="background:${color};color:#fff;padding:2px 8px;border-radius:4px;font-size:0.85em;">${rol}</span></td>
+            <td style="display:flex;gap:6px;flex-wrap:wrap;">${acciones}</td>
         </tr>`;
     });
 
@@ -84,8 +100,7 @@ function renderTabla(users) {
 
 window.cambiarRol = async function(userId, nuevoRol) {
     const etiquetas = { gestor: "GESTOR", publico: "PÚBLICO", inactivo: "INACTIVO" };
-    const confirmar = confirm(`¿Cambiar el rol de este usuario a ${etiquetas[nuevoRol]}?`);
-    if (!confirmar) return;
+    if (!confirm(`¿Cambiar el rol de este usuario a ${etiquetas[nuevoRol]}?`)) return;
 
     try {
         const response = await fetch(`/api/v1/users/${userId}`, {
@@ -107,10 +122,9 @@ window.cambiarRol = async function(userId, nuevoRol) {
 };
 
 window.eliminarUsuario = async function(userId, email) {
-    const confirmar = confirm(
+    if (!confirm(
         `¿Eliminar al usuario "${email}"?\n\nEsta acción también eliminará TODOS sus datos asociados y no se puede deshacer.`
-    );
-    if (!confirmar) return;
+    )) return;
 
     try {
         const response = await fetch(`/api/v1/users/${userId}`, {
