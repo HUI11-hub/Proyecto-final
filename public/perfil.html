@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blue Travels · Mi perfil</title>
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/main.css">
+    <script defer src="js/main.js"></script>
+    <script defer src="js/perfil.js"></script>
+</head>
+<body>
+<header class="navBar">
+    <div class="title">Blue Travels</div>
+    <nav>
+        <button class="navBtn" onclick="window.location.href='main.html'">Tablero</button>
+        <button class="navBtn" id="navAdmin" onclick="window.location.href='admin.html'">Administración</button>
+        <button class="navBtn" id="navUsers" onclick="window.location.href='users.html'">Usuarios y roles</button>
+        <div class="separator"></div>
+        <button class="navBtn" id="usernameText" onclick="window.location.href='perfil.html'">Perfil</button>
+        <div class="rolBox" id="rolBox"></div>
+        <div class="separator"></div>
+        <button class="navBtn exit" id="exitBtn">Cerrar sesión</button>
+    </nav>
+</header>
+
+<main>
+    <h2>Mi perfil</h2>
+
+    <div class="panel subSticky" style="max-width: 520px; margin: 0 auto;">
+
+        <!-- Sección: datos de la cuenta -->
+        <h4>Datos de la cuenta</h4>
+        <hr>
+        <div id="perfilInfo" style="margin-bottom: 16px;">
+            <p><strong>ID:</strong> <span id="perfilId">—</span></p>
+            <p><strong>Email:</strong> <span id="perfilEmail">—</span></p>
+            <p><strong>Rol:</strong> <span id="perfilRol">—</span></p>
+        </div>
+
+        <!-- Sección: cambiar email -->
+        <h4>Cambiar email</h4>
+        <hr>
+        <form id="formEmail">
+            <div class="inputBox">
+                <label for="nuevoEmail">Nuevo email:</label>
+                <input class="textInput" type="email" id="nuevoEmail" placeholder="nuevo@email.com" required>
+                <small id="emailFeedback" style="display:block; margin-top:4px; font-size:0.85em;"></small>
+            </div>
+            <button type="submit" class="btnEnter" style="margin-top:8px;">Guardar email</button>
+        </form>
+
+        <br>
+
+        <!-- Sección: cambiar contraseña -->
+        <h4>Cambiar contraseña</h4>
+        <hr>
+        <form id="formPassword">
+            <div class="inputBox">
+                <label for="passwordActual">Contraseña actual:</label>
+                <input class="textInput" type="password" id="passwordActual" required>
+            </div>
+            <div class="inputBox">
+                <label for="passwordNueva">Nueva contraseña:</label>
+                <input class="textInput" type="password" id="passwordNueva" required>
+            </div>
+            <div class="inputBox">
+                <label for="passwordRepeat">Repetir nueva contraseña:</label>
+                <input class="textInput" type="password" id="passwordRepeat" required>
+            </div>
+            <button type="submit" class="btnEnter" style="margin-top:8px;">Cambiar contraseña</button>
+        </form>
+
+    </div>
+</main>
+</body>
+</html>
