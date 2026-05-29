@@ -1,15 +1,14 @@
 import { Punto } from "./models/Punto.js";
 import { Operador } from "./models/Operador.js";
 import { Operation } from "./models/Operation.js";
-
 import { View, ViewWaypoints, ViewOperators, ViewOperations } from "./views/view.js";
 import { Controller } from "./controllers/controller.js";
 import { createRepo } from "./factory.js";
 
 const currentUserAdmin = JSON.parse(sessionStorage.getItem("user"));
 
-if (!currentUserAdmin || currentUserAdmin.rol !== "manager") {
-    alert("Acceso denegado. Esta zona es exclusiva para Gestores.");
+if (!currentUserAdmin || currentUserAdmin.rol !== "gestor") {
+    alert("Acceso denegado. Esta zona es exclusiva para GESTORES");
     document.location = "main.html";
 }
 
