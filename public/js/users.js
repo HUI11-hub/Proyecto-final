@@ -1,56 +1,133 @@
 const currentUser = JSON.parse(sessionStorage.getItem("user"));
-if (!currentUser || currentUser.rol !== "manager") {
-    alert("Acceso denegado. Esta zona es solo para Gestores.");
+if (!currentUser || currentUser.rol !== "gestor") {
+    alert("Acceso denegado. Esta zona es exclusiva para GESTORES.");
     document.location = "main.html";
 }
-function renderUsersTable() {
-    const container = document.getElementById("usersContainer");
-    let users = JSON.parse(localStorage.getItem("users")) || [];
-    let tableHTML = `
-        <table class="shadowPanel" id="adminTable">
-            <tr>
-                <th>Email</th>
-                <th>Rol</th>
-                <th>Acción</th>
-            </tr>
-    `;
-    users.forEach((user, index) => {
-        let actionButton = "";
-        if (user.rol === "public") {
-            actionButton = `<button class="btnChange" onclick="changeRole(${index}, 'manager')" style="background-color: hsl(210, 100%, 50%);">Cambiar a GESTOR</button>`;
-        } else {
-            actionButton = `<button class="btnChange" onclick="changeRole(${index}, 'public')" style="background-color: hsl(210, 100%, 20%);">Cambiar a PÚBLICO</button>`;
+
+function getHeaders() {
+    return {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${currentUser.token}`
+    };
+}
+
+const container = document.getElementById("usersContainer");
+
+async function cargarUsuarios() {
+    try {
+        const response = await fetch("/api/v1/users", { headers: getHeaders() });
+
+        if (!response.ok) {
+            container.innerHTML = `<p>Error al cargar usuarios (${response.status}).</p>`;
+            return;
         }
 
-        tableHTML += `
-            <tr>
-                <td style="padding: 8px;">${user.name}</td>
-                <td style="padding: 8px;">${user.rol === 'manager' ? 'GESTOR' : 'PÚBLICO'}</td>
-                <td style="padding: 8px;">${actionButton}</td>
-            </tr>
-        `;
+        const data  = await response.json();
+        const users = data.users.map(item => item.user ?? item);
+        renderTabla(users);
+
+    } catch (err) {
+        console.error("Error cargando usuarios:", err);
+        container.innerHTML = `<p>Error de conexión.</p>`;
+    }
+}
+
+function renderTabla(users) {
+    let html = `
+    <table class="shadowPanel" id="usersTable">
+        <tr>
+            <th>ID</th>
+            <th>Email</th>
+            <th>Rol</th>
+            <th>Acciones</th>
+        </tr>`;
+
+    users.forEach(u => {
+        const esMismo  = u.id === currentUser.id;
+        const rolLabel = u.role === "GESTOR"   ? "GESTOR"
+                       : u.role === "INACTIVO" ? "INACTIVO"
+                       : "PÚBLICO";
+        const rolColor = u.role === "GESTOR"   ? "hsl(210,100%,40%)"
+                       : u.role === "INACTIVO" ? "#999"
+                       : "hsl(210,60%,60%)";
+
+        let acciones = "";
+        if (!esMismo) {
+            if (u.role !== "GESTOR") {
+                acciones += `<button class="btnEdit" onclick="cambiarRol(${u.id}, 'gestor')">→ GESTOR</button> `;
+            }
+            if (u.role !== "PUBLICO") {
+                acciones += `<button class="btnEdit" onclick="cambiarRol(${u.id}, 'publico')">PÚBLICO</button> `;
+            }
+            if (u.role !== "INACTIVO") {
+                acciones += `<button class="btnChange" onclick="cambiarRol(${u.id}, 'inactivo')" style="background:#aaa;">Desactivar</button> `;
+            } else {
+                acciones += `<button class="btnChange" onclick="cambiarRol(${u.id}, 'publico')" style="background:hsl(210,60%,60%);">Activar</button> `;
+            }
+            acciones += `<button class="btnDelete" onclick="eliminarUsuario(${u.id}, '${u.email}')">Eliminar</button>`;
+        } else {
+            acciones = `<em style="color:#888;">(tú)</em>`;
+        }
+
+        html += `
+        <tr>
+            <td>${u.id}</td>
+            <td>${u.email}</td>
+            <td><span style="background:${rolColor};color:#fff;padding:2px 8px;border-radius:4px;">${rolLabel}</span></td>
+            <td>${acciones}</td>
+        </tr>`;
     });
 
-    tableHTML += `</table>`;
-    container.innerHTML = tableHTML;
+    html += `</table>`;
+    container.innerHTML = html;
 }
-window.changeRole = function(userIndex, newRole) {
-    let users = JSON.parse(localStorage.getItem("users"));
-    if (newRole === "public") {
-        const managerCount = users.filter(u => u.rol === "manager").length;
-        if (managerCount <= 1) {
-            alert("No puedes degradar a este usuario. Debe quedar al menos un GESTOR en el sistema.");
-            return; 
+
+window.cambiarRol = async function(userId, nuevoRol) {
+    const etiquetas = { gestor: "GESTOR", publico: "PÚBLICO", inactivo: "INACTIVO" };
+    const confirmar = confirm(`¿Cambiar el rol de este usuario a ${etiquetas[nuevoRol]}?`);
+    if (!confirmar) return;
+
+    try {
+        const response = await fetch(`/api/v1/users/${userId}`, {
+            method: "PUT",
+            headers: getHeaders(),
+            body: JSON.stringify({ role: nuevoRol })
+        });
+
+        if (response.ok) {
+            cargarUsuarios();
+        } else {
+            const err = await response.json().catch(() => ({}));
+            alert("Error al cambiar rol: " + (err.message || response.status));
         }
+    } catch (err) {
+        console.error(err);
+        alert("Error de conexión.");
     }
-    users[userIndex].rol = newRole;
-    localStorage.setItem("users", JSON.stringify(users));
-    if (users[userIndex].name === currentUser.name && newRole === "public") {
-        sessionStorage.setItem("user", JSON.stringify(users[userIndex]));
-        alert("Te has degradado a ti mismo. Serás redirigido al tablero público.");
-        document.location = "main.html";
-        return;
-    }
-    renderUsersTable();
 };
-renderUsersTable();
+
+window.eliminarUsuario = async function(userId, email) {
+    const confirmar = confirm(
+        `¿Eliminar al usuario "${email}"?\n\nEsta acción también eliminará TODOS sus datos asociados y no se puede deshacer.`
+    );
+    if (!confirmar) return;
+
+    try {
+        const response = await fetch(`/api/v1/users/${userId}`, {
+            method: "DELETE",
+            headers: getHeaders()
+        });
+
+        if (response.ok || response.status === 204) {
+            cargarUsuarios();
+        } else {
+            const err = await response.json().catch(() => ({}));
+            alert("Error al eliminar usuario: " + (err.message || response.status));
+        }
+    } catch (err) {
+        console.error(err);
+        alert("Error de conexión.");
+    }
+};
+
+cargarUsuarios();
