@@ -1,0 +1,110 @@
+[data-theme="dark"] {
+    --color-background:     #1a1a2e;
+    --color-background-box: #16213e;
+    --color-border:         #444466;
+    --shadow:               #000;
+    --color-primary:        hsla(var(--color), 80%, 55%, 1);
+    --color-primary-light:  hsl(var(--color),  80%, 65%);
+    --color-primary-dark:   hsl(var(--color),  80%, 40%);
+    --color-primary-opac01: hsla(var(--color), 80%, 55%, 0.1);
+    --color-primary-opac02: hsla(var(--color), 80%, 55%, 0.2);
+    --color-primary-opac04: hsla(var(--color), 80%, 55%, 0.4);
+}
+
+[data-theme="dark"] body {
+    color: #e0e0f0;
+}
+
+[data-theme="dark"] body {
+    background-color: var(--color-background);
+    background-image: linear-gradient(
+        15deg,
+        var(--color-background) 45%,
+        hsl(var(--color), 60%, 20%) 45%,
+        hsl(var(--color), 60%, 20%) 50%,
+        var(--color-background) 50%
+    );
+}
+
+[data-theme="dark"] .navBar {
+    background-color: rgba(22, 33, 62, 0.85);
+}
+
+[data-theme="dark"] table {
+    border-color: #333355;
+    background-color: var(--color-background-box);
+    color: #e0e0f0;
+}
+
+[data-theme="dark"] tr {
+    background-color: var(--color-background-box);
+}
+
+[data-theme="dark"] tr:hover {
+    background-color: rgba(100, 120, 200, 0.1);
+}
+
+[data-theme="dark"] th {
+    background-color: #0f172a;
+    color: #a0b0d0;
+}
+
+[data-theme="dark"] td {
+    border-color: #333355;
+}
+
+[data-theme="dark"] .textInput,
+[data-theme="dark"] .colorInput,
+[data-theme="dark"] select,
+[data-theme="dark"] input {
+    background-color: #0f172a;
+    color: #e0e0f0;
+    border-color: var(--color-border);
+}
+
+[data-theme="dark"] .textInput::placeholder,
+[data-theme="dark"] input::placeholder {
+    color: #666688;
+}
+
+[data-theme="dark"] .panel,
+[data-theme="dark"] .subNavBar,
+[data-theme="dark"] form {
+    background-color: var(--color-background-box);
+    border-color: #333355;
+    box-shadow: 4px 4px 0px #000;
+}
+
+[data-theme="dark"] .navBtn {
+    color: #c0d0f0;
+}
+
+[data-theme="dark"] .navSecondary {
+    background-color: #0f172a;
+    color: #e0e0f0;
+}
+
+[data-theme="dark"] *::-webkit-scrollbar-track {
+    background-color: #0f172a;
+}
+
+[data-theme="dark"] .estadoTable {
+    color: #111;
+}
+
+.darkToggle {
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    height: 32px;
+    width: 36px;
+    padding: 0;
+    cursor: pointer;
+    transition: transform 0.3s;
+    line-height: 1;
+}
+
+.darkToggle:hover {
+    transform: rotate(20deg) scale(1.2);
+    background: transparent !important;
+}
