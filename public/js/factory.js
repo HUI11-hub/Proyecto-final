@@ -17,15 +17,27 @@ export class ApiFactory {
     _normalize(data) {
         if (data && data.punto) {
             const p = data.punto;
-            return { id: p.puntoId, tipo: p.tipo, codigo: p.codigo, operaciones: p.operaciones ?? [] };
+            return { id: p.puntoId ?? p.id, tipo: p.tipo, codigo: p.codigo, operaciones: p.operaciones ?? [] };
         }
         if (data && data.operador) {
             const o = data.operador;
-            return { id: o.operadorId, nombre: o.nombre, siglas: o.siglas, color: o.color, urlIcono: o.urlIcono, operaciones: o.operaciones ?? [] };
+            return { id: o.operadorId ?? o.id, nombre: o.nombre, siglas: o.siglas, color: o.color, urlIcono: o.urlIcono, operaciones: o.operaciones ?? [] };
         }
         if (data && data.operacion) {
             const op = data.operacion;
-            return { id: op.operacionId, ...op };
+            return {
+                ulid:           op.operacionId ?? op.id,
+                tipo:           op.tipo,
+                codigo:         op.codigo,
+                sentido:        op.sentido,
+                origen:         op.origen,
+                destino:        op.destino,
+                horaProgramada: op.horaProgramada,
+                horaEstimada:   op.horaEstimada,
+                estado:         op.estado,
+                operatorId:     op.operatorId ?? op.operadorId,
+                spotId:         op.spotId     ?? op.puntoId
+            };
         }
         return data;
     }
@@ -38,20 +50,32 @@ export class ApiFactory {
 
             if (this.endpoint.includes('operators') && data.operadores) {
                 return data.operadores.map(item => {
-                    const o = item.operador || item;
+                    const o = item.operador ?? item;
                     return { id: o.operadorId ?? o.id, nombre: o.nombre, siglas: o.siglas, color: o.color, urlIcono: o.urlIcono, operaciones: o.operaciones ?? [] };
                 });
             }
             if (this.endpoint.includes('spots') && data.puntos) {
                 return data.puntos.map(item => {
-                    const p = item.punto || item;
+                    const p = item.punto ?? item;
                     return { id: p.puntoId ?? p.id, tipo: p.tipo, codigo: p.codigo, operaciones: p.operaciones ?? [] };
                 });
             }
             if (this.endpoint.includes('operations') && data.operaciones) {
                 return data.operaciones.map(item => {
-                    const op = item.operacion || item;
-                    return { id: op.operacionId ?? op.id, ...op };
+                    const op = item.operacion ?? item;
+                    return {
+                        ulid:           op.operacionId ?? op.id,
+                        tipo:           op.tipo,
+                        codigo:         op.codigo,
+                        sentido:        op.sentido,
+                        origen:         op.origen,
+                        destino:        op.destino,
+                        horaProgramada: op.horaProgramada,
+                        horaEstimada:   op.horaEstimada,
+                        estado:         op.estado,
+                        operatorId:     op.operatorId ?? op.operadorId,
+                        spotId:         op.spotId     ?? op.puntoId
+                    };
                 });
             }
             return data;
@@ -64,15 +88,14 @@ export class ApiFactory {
     async create(item) {
         const payload = { ...item };
         delete payload.id;
+        delete payload.ulid;
 
         if (this.endpoint.includes('operations')) {
-            if (payload.estado)  payload.estado  = String(payload.estado).toLowerCase();
-            if (payload.tipo)    payload.tipo     = String(payload.tipo).toLowerCase();
-            if (payload.sentido) payload.sentido  = String(payload.sentido).toLowerCase();
-            if (payload['Hora Prog.']) { payload.horaProgramada = payload['Hora Prog.']; delete payload['Hora Prog.']; }
-            if (payload['Hora Est.'])  { payload.horaEstimada   = payload['Hora Est.'];  delete payload['Hora Est.']; }
-            if (payload.Operador)      { payload.operadorId = Number(payload.Operador);  delete payload.Operador; }
-            if (payload['Puerta/Vía']) { payload.puntoId = Number(payload['Puerta/Vía']); delete payload['Puerta/Vía']; }
+            payload.tipo    = String(payload.tipo    || '').toLowerCase();
+            payload.sentido = String(payload.sentido || '').toLowerCase();
+            payload.estado  = String(payload.estado  || '').toLowerCase();
+            payload.operatorId = Number(payload.operatorId || 0);
+            payload.spotId     = Number(payload.spotId     || 0);
         }
 
         const response = await fetch(this.endpoint, {
@@ -83,10 +106,11 @@ export class ApiFactory {
 
         if (!response.ok) {
             const errorText = await response.text();
+            console.error(`Error del servidor (${response.status}):`, errorText);
             alert(`El servidor rechazó los datos (Error ${response.status}). Revisa la consola.`);
-            throw new Error("POST abortado");
+            throw new Error('POST abortado');
         }
-        
+
         const data = await response.json();
         return this._normalize(data);
     }
@@ -94,6 +118,13 @@ export class ApiFactory {
     async update(id, item) {
         const payload = { ...item };
         delete payload.id;
+        delete payload.ulid;
+
+        if (this.endpoint.includes('operations')) {
+            if (payload.tipo)    payload.tipo    = payload.tipo.toLowerCase();
+            if (payload.sentido) payload.sentido = payload.sentido.toLowerCase();
+            if (payload.estado)  payload.estado  = payload.estado.toLowerCase();
+        }
 
         const response = await fetch(`${this.endpoint}/${id}`, {
             method: 'PUT',
@@ -103,8 +134,9 @@ export class ApiFactory {
 
         if (!response.ok) {
             const errorText = await response.text();
+            console.error(`Error del servidor (${response.status}):`, errorText);
             alert(`El servidor rechazó la edición (Error ${response.status}).`);
-            throw new Error("PUT abortado");
+            throw new Error('PUT abortado');
         }
     }
 
@@ -118,12 +150,12 @@ export class ApiFactory {
 
 export function createRepo(kind) {
     switch (kind) {
-        case "operations": return new ApiFactory("operations");
-        case "operators":  return new ApiFactory("operators");
-        case "waypoints":
-        case "spots":
-        case "puntos":
-            return new ApiFactory("spots");
+        case 'operations': return new ApiFactory('operations');
+        case 'operators':  return new ApiFactory('operators');
+        case 'waypoints':
+        case 'spots':
+        case 'puntos':
+            return new ApiFactory('spots');
         default: throw new Error(`Colección no soportada: '${kind}'`);
     }
 }

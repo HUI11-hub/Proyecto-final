@@ -1,17 +1,17 @@
 export class View {
     constructor() {
-        this.adminForm = document.getElementById("adminForm");
-        this.table = document.getElementById("adminTable");
-        this.editForm = document.getElementById("editForm");
+        this.adminForm   = document.getElementById("adminForm");
+        this.table       = document.getElementById("adminTable");
+        this.editForm    = document.getElementById("editForm");
         this.titleAdminEdit = document.getElementById("titleAdminEdit");
-        this.adminTitle = document.getElementById("adminTitle");
-        this.btnSubmit = document.getElementById("btnSubmit");
-        this.btnCancel = document.getElementById("btnCancel");
+        this.adminTitle  = document.getElementById("adminTitle");
+        this.btnSubmit   = document.getElementById("btnSubmit");
+        this.btnCancel   = document.getElementById("btnCancel");
     }
 
     bindFormSubmit(handler) { this.adminForm.onsubmit = handler; }
-    bindListClick(handler) { this.table.onclick = handler; }
-    bindCancel(handler) { this.btnCancel.onclick = handler; }
+    bindListClick(handler)  { this.table.onclick = handler; }
+    bindCancel(handler)     { this.btnCancel.onclick = handler; }
 
     fillForm() {
         this.btnSubmit.textContent = "Guardar cambios";
@@ -27,14 +27,16 @@ export class View {
     }
 }
 
+// ─── PUNTOS ────────────────────────────────────────────────────────────────────
+
 export class ViewWaypoints extends View {
     constructor() { super(); }
 
     getFormData() {
         const fd = new FormData(this.adminForm);
         return {
-            id: fd.get("id"),
-            tipo: String(fd.get("tipo") || "").trim(),
+            id:     fd.get("id"),
+            tipo:   String(fd.get("tipo")   || "").trim(),
             codigo: String(fd.get("codigo") || "").trim()
         };
     }
@@ -99,26 +101,28 @@ export class ViewWaypoints extends View {
     }
 }
 
+// ─── OPERADORES ────────────────────────────────────────────────────────────────
+
 export class ViewOperators extends View {
     constructor() { super(); }
 
     getFormData() {
         const fd = new FormData(this.adminForm);
         return {
-            id: fd.get("id"),
-            nombre: String(fd.get("nombre") || "").trim(),
-            siglas: String(fd.get("siglas") || "").trim(),
-            color: String(fd.get("color") || "").trim(),
+            id:       fd.get("id"),
+            nombre:   String(fd.get("nombre")   || "").trim(),
+            siglas:   String(fd.get("siglas")   || "").trim(),
+            color:    String(fd.get("color")    || "").trim(),
             urlIcono: String(fd.get("urlIcono") || "").trim()
         };
     }
 
     fillForm(item) {
-        document.getElementById("operatorId").value = item.id;
-        document.getElementById("nombre").value = item.nombre;
-        document.getElementById("siglas").value = item.siglas;
-        document.getElementById("color").value = item.color;
-        document.getElementById("urlIcono").value = item.urlIcono;
+        document.getElementById("operatorId").value  = item.id;
+        document.getElementById("nombre").value      = item.nombre;
+        document.getElementById("siglas").value      = item.siglas;
+        document.getElementById("color").value       = item.color;
+        document.getElementById("urlIcono").value    = item.urlIcono;
         super.fillForm();
         this.titleAdminEdit.innerText = "Modificar operador";
     }
@@ -178,6 +182,8 @@ export class ViewOperators extends View {
     }
 }
 
+// ─── OPERACIONES ───────────────────────────────────────────────────────────────
+
 export class ViewOperations extends View {
     constructor() {
         super();
@@ -185,6 +191,7 @@ export class ViewOperations extends View {
         this._puntos     = [];
     }
 
+    // Inyecta los datos de la API antes de renderizar
     setOperadoresYPuntos(operadores, puntos) {
         this._operadores = operadores;
         this._puntos     = puntos;
@@ -202,8 +209,8 @@ export class ViewOperations extends View {
             horaProgramada: String(fd.get("horaProgramada") || "").trim(),
             horaEstimada:   String(fd.get("horaEstimada")   || "").trim(),
             estado:         String(fd.get("estado")         || "").trim(),
-            operadorId:     Number(fd.get("operadorId")     || 0),
-            puntoId:        Number(fd.get("puntoId")        || 0)
+            operatorId:     Number(fd.get("operatorId")     || 0),
+            spotId:        Number(fd.get("spotId")        || 0)
         };
     }
 
@@ -220,10 +227,10 @@ export class ViewOperations extends View {
         document.getElementById("horaEstimada").value            = item.horaEstimada;
         document.getElementById("opcEstado").value               = item.estado;
         document.getElementById("opcEstado").dispatchEvent(new Event("change"));
-        document.getElementById("opcOperadorId").value           = item.operadorId;
-        document.getElementById("opcOperadorId").dispatchEvent(new Event("change"));
-        document.getElementById("opcPuntoId").value              = item.puntoId;
-        document.getElementById("opcPuntoId").dispatchEvent(new Event("change"));
+        document.getElementById("opcOperatorId").value           = item.operatorId;
+        document.getElementById("opcOperatorId").dispatchEvent(new Event("change"));
+        document.getElementById("opcSpotId").value              = item.spotId;
+        document.getElementById("opcSpotId").dispatchEvent(new Event("change"));
         super.fillForm();
         this.titleAdminEdit.innerText = "Modificar operación";
     }
@@ -304,7 +311,7 @@ export class ViewOperations extends View {
             <div class="inputBox">
                 <label>Operador:</label>
                 <div class="selectBox">
-                    <select id="opcOperadorId" name="operadorId">
+                    <select id="opcOperatorId" name="operatorId">
                         ${opcionesOperadores}
                     </select>
                 </div>
@@ -312,7 +319,7 @@ export class ViewOperations extends View {
             <div class="inputBox">
                 <label>Puerta/Vía:</label>
                 <div class="selectBox">
-                    <select id="opcPuntoId" name="puntoId">
+                    <select id="opcSpotId" name="spotId">
                         ${opcionesPuntos}
                     </select>
                 </div>
@@ -334,8 +341,8 @@ export class ViewOperations extends View {
             </tr>`;
 
         items.forEach(item => {
-            const op         = this._operadores.find(o => o.id == item.operadorId);
-            const pt         = this._puntos.find(p => p.id == item.puntoId);
+            const op         = this._operadores.find(o => o.id == item.operatorId);
+            const pt         = this._puntos.find(p => p.id == item.spotId);
             const nombreOp   = op ? op.nombre   : "Desconocido";
             const codigoPt   = pt ? pt.codigo   : "Desconocido";
 
